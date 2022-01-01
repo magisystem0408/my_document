@@ -1,0 +1,313 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "source": [
+    "# SOLID\n",
+    "## 単一責任の法則\n",
+    "### 同じ役割を入れるということ"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "import self as self\n",
+    "\n",
+    "\n",
+    "class Userinfo(object):\n",
+    "    def __init__(self, name, age, phone_number):\n",
+    "        self.name = name\n",
+    "        self.age = age\n",
+    "        self.phone_number = phone_number\n",
+    "\n",
+    "    def __str__(self):\n",
+    "        return \"{}{}{}\".format(\n",
+    "            self.name, self.age, self.phone_number\n",
+    "        )\n",
+    "\n",
+    "\n",
+    "# クラスを分ける\n",
+    "class FikeManager(object):\n",
+    "    @staticmethod\n",
+    "    def write_to_file(obj, filename):\n",
+    "        with open(filename, mode=\"w\") as f:\n",
+    "            f.write(str(obj))\n",
+    "\n",
+    "\n",
+    "userinfo = Userinfo(\"Taro\", 31, \"000-000-000\")\n",
+    "print(str(userinfo))\n",
+    "FikeManager.write_to_file(userinfo, \"tmp.txt\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## 開放閉鎖の原則\n",
+    "### ソースコードを変更するのではなく、追加して修正していく"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "tarosalary manJapan\n",
+      "johnsalary manUSA\n",
+      "tarosalary manJapan\n",
+      "tarosalary manJapan\n"
+     ]
+    }
+   ],
+   "source": [
+    "from abc import ABCMeta, abstractmethod\n",
+    "\n",
+    "\n",
+    "# ソースコードを変更するのではなく追加して修正していく\n",
+    "\n",
+    "class UserInfo:\n",
+    "    def __init__(self, user_name, job_name, nationality):\n",
+    "        self.user_name = user_name\n",
+    "        self.job_name = job_name\n",
+    "        self.nationality = nationality\n",
+    "\n",
+    "    def __str__(self):\n",
+    "        return '{}{}{}'.format(\n",
+    "            self.user_name, self.job_name, self.nationality\n",
+    "        )\n",
+    "\n",
+    "\n",
+    "# 抽象クラス\n",
+    "\"\"\"必ず継承先を使わないといけない\"\"\"\n",
+    "\n",
+    "class Comparetion(metaclass=ABCMeta):\n",
+    "    @abstractmethod\n",
+    "    def is_equal(self, other):\n",
+    "        pass\n",
+    "\n",
+    "    def __and__(self, other):\n",
+    "        return AndComparation(self, other)\n",
+    "\n",
+    "    def __or__(self, other):\n",
+    "        return OrComparation(self, other)\n",
+    "\n",
+    "\n",
+    "class AndComparation(Comparetion):\n",
+    "    def __init__(self, *args):\n",
+    "        self.comparetions = args\n",
+    "\n",
+    "    def is_equal(self, other):\n",
+    "        return all(\n",
+    "            map(\n",
+    "                lambda comparation: comparation.is_equal(other),\n",
+    "                self.comparetions\n",
+    "            )\n",
+    "        )\n",
+    "\n",
+    "\n",
+    "class OrComparation(Comparetion):\n",
+    "    def __init__(self, *args):\n",
+    "        self.comparetions = args\n",
+    "\n",
+    "    def is_equal(self, other):\n",
+    "        return any(\n",
+    "            map(\n",
+    "                lambda comparation: comparation.is_equal(other),\n",
+    "                self.comparetions\n",
+    "            )\n",
+    "        )\n",
+    "\n",
+    "\n",
+    "class Filter(metaclass=ABCMeta):\n",
+    "    @abstractmethod\n",
+    "    def filter(self, comparetion, item):\n",
+    "        pass\n",
+    "\n",
+    "\n",
+    "class JobNameComparetion(Comparetion):\n",
+    "    def __init__(self, job_name):\n",
+    "        self.job_name = job_name\n",
+    "\n",
+    "    def is_equal(self, other):\n",
+    "        return self.job_name == other.job_name\n",
+    "\n",
+    "\n",
+    "class NationalityComparation(Comparetion):\n",
+    "    def __init__(self, nationality):\n",
+    "        self.nationality = nationality\n",
+    "\n",
+    "    def is_equal(self, other):\n",
+    "        return self.nationality == other.nationality\n",
+    "\n",
+    "\n",
+    "class UserInfoFilter(Filter):\n",
+    "    def filter(self, comparetion, items):\n",
+    "        for item in items:\n",
+    "            if comparetion.is_equal(item):\n",
+    "                yield item\n",
+    "\n",
+    "\n",
+    "taro = UserInfo('taro', 'salary man', 'Japan')\n",
+    "jiro = UserInfo('jiro', 'police man', 'japan')\n",
+    "john = UserInfo('john', 'salary man', 'USA')\n",
+    "\n",
+    "user_list = [taro, jiro, john]\n",
+    "\n",
+    "salary_man_comparetion = JobNameComparetion('salary man')\n",
+    "\n",
+    "user_info_filter = UserInfoFilter()\n",
+    "\n",
+    "for user in user_info_filter.filter(salary_man_comparetion, user_list):\n",
+    "    print(user)\n",
+    "\n",
+    "japan_comparetion = NationalityComparation('Japan')\n",
+    "\n",
+    "for user in user_info_filter.filter(japan_comparetion, user_list):\n",
+    "    print(user)\n",
+    "\n",
+    "# これをすると__and__が出てくる\n",
+    "salary_man_japan = salary_man_comparetion & japan_comparetion\n",
+    "\n",
+    "for user in user_info_filter.filter(salary_man_japan, user_list):\n",
+    "    print(user)"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## インターフェース分離の法則\n",
+    "### いらないコードを書かないようにする。"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "I swim\n",
+      "I high jump\n"
+     ]
+    }
+   ],
+   "source": [
+    "from abc import ABCMeta, abstractmethod\n",
+    "\n",
+    "\n",
+    "class Athlete(metaclass=ABCMeta):\n",
+    "    pass\n",
+    "\n",
+    "\n",
+    "# ここで分ける\n",
+    "class SwimAthlete(Athlete):\n",
+    "    @abstractmethod\n",
+    "    def swim(self):\n",
+    "        pass\n",
+    "\n",
+    "\n",
+    "class JumpAthlete(Athlete):\n",
+    "    @abstractmethod\n",
+    "    def high_jump(self):\n",
+    "        pass\n",
+    "\n",
+    "    @abstractmethod\n",
+    "    def long_jump(self):\n",
+    "        pass\n",
+    "\n",
+    "\n",
+    "class Athlete1(SwimAthlete):\n",
+    "    def swim(self):\n",
+    "        print(\"I swim\")\n",
+    "\n",
+    "\n",
+    "class Athlete2(SwimAthlete, JumpAthlete):\n",
+    "\n",
+    "    def swim(self):\n",
+    "        print(\"I swim\")\n",
+    "\n",
+    "    def high_jump(self):\n",
+    "        print(\"I high jump\")\n",
+    "\n",
+    "    def long_jump(self):\n",
+    "        print(\"I long jump\")\n",
+    "\n",
+    "\n",
+    "john = Athlete1()\n",
+    "john.swim()\n",
+    "\n",
+    "yuji = Athlete2()\n",
+    "yuji.high_jump()"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "outputs": [],
+   "source": [],
+   "metadata": {
+    "collapsed": false,
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   }
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}

@@ -11,6 +11,7 @@
    :caption: Contents:
    :glob:
 
+
    pages/1
    pages/2
    pages/3
@@ -21,6 +22,11 @@
    pages/container/docker_ec2
    pages/vim
    pages/python/diffcult
+   pages/codeDesign/solid
+
+
+
+   pages/mamushi
 
 Indices and tables
 
