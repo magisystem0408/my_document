@@ -11,10 +11,9 @@
    :caption: Contents:
    :glob:
 
-
-   pages/main
    pages/1
    pages/2
+   pages/3
 
 Indices and tables
 
