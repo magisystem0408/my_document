@@ -14,6 +14,9 @@
    pages/1
    pages/2
    pages/3
+   pages/4
+   pages/5
+   pages/docker
 
 Indices and tables
 
