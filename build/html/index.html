@@ -47,7 +47,9 @@
 <li class="toctree-l1"><a class="reference internal" href="pages/5.html">組み合わせとか順列とか</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/container/docker.html">例の「鯨」の飼い方(Docker)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/container/k8s.html">インターネットの「航海士」(k8s)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/container/docker_ec2.html">「鯨」をEc2で飼育する時</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/vim.html">vim操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/python/diffcult.html">pythonで理解するのが大変な分野のまとめ食い</a></li>
 </ul>
 
         </div>
@@ -109,13 +111,18 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pages/2.html">データ構造操作</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/2.html#ソート">ソート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/2.html#リンクリスト">リンクリスト</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/2.html#キュー&amp;スタック">キュー&amp;スタック</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/2.html#リニアサーチ">リニアサーチ</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/2.html#ハッシュテーブル">ハッシュテーブル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/2.html#二分木">二分木</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pages/3.html">整数とか素数とか</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/3.html#素数">素数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/3.html#約数">約数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/3.html#素因数分解">素因数分解</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/3.html#最大公約数">最大公約数</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/3.html#偶数奇数並べ替え">偶数奇数並べ替え</a></li>
 </ul>
 </li>
@@ -123,7 +130,13 @@
 <li class="toctree-l2"><a class="reference internal" href="pages/4.html#フィボナッチ・トリボナッチ数列">フィボナッチ・トリボナッチ数列</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pages/5.html">組み合わせとか順列とか</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/5.html">組み合わせとか順列とか</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/5.html#階乗">階乗</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/5.html#異なるn個のものからr個選んで1列に並べる場合の数">異なるn個のものからr個選んで1列に並べる場合の数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/5.html#配列から順列を生成して列挙">配列から順列を生成して列挙</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/5.html#リストから取り出した3つの整数の合計が0になる組み合わせ">リストから取り出した3つの整数の合計が0になる組み合わせ</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="pages/container/docker.html">例の「鯨」の飼い方(Docker)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/container/docker.html#id1">dockerコマンド</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/container/docker.html#docker-compose">docker-composeコマンド</a></li>
@@ -133,10 +146,20 @@
 <li class="toctree-l2"><a class="reference internal" href="pages/container/k8s.html#kubectl">kubectlコマンド</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="pages/container/docker_ec2.html">「鯨」をEc2で飼育する時</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/container/docker_ec2.html#amazon-linux2docker">amazon-linux2にdockerにインストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/container/docker_ec2.html#amazon-linux2docker-compose">amazon-linux2にdocker-composeインストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/container/docker_ec2.html#ubuntu">ubuntuに「鯨とタコ」インストール</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="pages/vim.html">vim操作</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/vim.html#undo">undo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/vim.html#id1">1行削除</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/vim.html#id2">一文字削除</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/python/diffcult.html">pythonで理解するのが大変な分野のまとめ食い</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/python/diffcult.html#並列化">並列化</a></li>
 </ul>
 </li>
 </ul>

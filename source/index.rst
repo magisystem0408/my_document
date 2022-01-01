@@ -18,7 +18,9 @@
    pages/5
    pages/container/docker
    pages/container/k8s
+   pages/container/docker_ec2
    pages/vim
+   pages/python/diffcult
 
 Indices and tables
 

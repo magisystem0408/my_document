@@ -26,8 +26,6 @@
    "source": [
     "from typing import List\n",
     "\n",
-    "import HashTable as HashTable\n",
-    "\n",
     "\n",
     "def bubble_sort(numbers: List[int]) -> List[int]:\n",
     "    len_numbers = len(numbers)\n",
@@ -182,6 +180,27 @@
     "    num = [random.randint(0, 1000) for _ in range(10)]\n",
     "    quick_sort(num)"
    ],
+   "metadata": {
+    "collapsed": false,
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## リンクリスト"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "outputs": [],
+   "source": [],
    "metadata": {
     "collapsed": false,
     "pycharm": {
@@ -430,10 +449,26 @@
    }
   },
   {
+   "cell_type": "markdown",
+   "source": [
+    "## 二分木"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
    "cell_type": "code",
    "execution_count": null,
    "outputs": [],
-   "source": [],
+   "source": [
+    "class Node(object):\n",
+    "    def __init__(self, value: int) -> None:\n",
+    "        self.value = value\n",
+    "        self.left = None\n",
+    "        self.right = None\n",
+    "\n"
+   ],
    "metadata": {
     "collapsed": false,
     "pycharm": {
