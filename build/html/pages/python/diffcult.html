@@ -52,8 +52,35 @@
 <li class="toctree-l1"><a class="reference internal" href="../container/docker_ec2.html">「鯨」をEc2で飼育する時</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../vim.html">vim操作</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">pythonで理解するのが大変な分野のまとめ食い</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#並列化">並列化</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#スレッドについて">スレッドについて</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#スレッドについて">スレッドについて</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#デーモンスレッド:スレッド">デーモンスレッド:スレッド</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。">デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#セマフォ:スレッド">セマフォ:スレッド</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#スレッド数を制御をすることができる">スレッド数を制御をすることができる</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#キュー:スレッド">キュー:スレッド</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#スレッド間で入れたり受け取ったりできる。">スレッド間で入れたり受け取ったりできる。</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#キューの応用的な使い方:スレッド">キューの応用的な使い方:スレッド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#condition:スレッド">condition:スレッド</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#コンディションはスレッドの制御をすることができる">コンディションはスレッドの制御をすることができる</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#event:スレッド">event:スレッド</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setが押されてから他のスレッドが動き始める">setが押されてから他のスレッドが動き始める</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#バリア:スレッド">バリア:スレッド</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#スレッドが2つ立ち上がらないように次まで進まない">スレッドが2つ立ち上がらないように次まで進まない</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#socket通信">socket通信</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#client実装">client実装</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server実装">server実装</a></li>
 </ul>
 </li>
 </ul>
@@ -356,18 +383,18 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="pythonで理解するのが大変な分野のまとめ食い">
 <h1>pythonで理解するのが大変な分野のまとめ食い<a class="headerlink" href="#pythonで理解するのが大変な分野のまとめ食い" title="このヘッドラインへのパーマリンク"></a></h1>
-<section id="並列化">
-<h2>並列化<a class="headerlink" href="#並列化" title="このヘッドラインへのパーマリンク"></a></h2>
 <section id="スレッドについて">
-<h3>スレッドについて<a class="headerlink" href="#スレッドについて" title="このヘッドラインへのパーマリンク"></a></h3>
+<h2>スレッドについて<a class="headerlink" href="#スレッドについて" title="このヘッドラインへのパーマリンク"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">barrier</span> <span class="k">as</span> <span class="nn">barrier</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
     <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
@@ -431,28 +458,1731 @@ rename worker1: start
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Thread-10: start
-Thread-10: 100
-Thread-10: 200
+Thread-29: start
+Thread-29: 100
+Thread-29: 200
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</section>
+<section id="デーモンスレッド:スレッド">
+<h2>デーモンスレッド:スレッド<a class="headerlink" href="#デーモンスレッド:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。">
+<h3>デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。<a class="headerlink" href="#デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
-<span></span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(threadName)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker1</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker2</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker1</span><span class="p">)</span>
+    <span class="n">t1</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker2</span><span class="p">)</span>
+
+    <span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;スレッドを開始しました&quot;</span><span class="p">)</span>
+
+    <span class="c1"># joinを入れると必ず、worker1のスレッドを待つ様になる。</span>
+    <span class="n">t1</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+
+
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Thread-30: start
+Thread-31: start
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+スレッドを開始しました
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Thread-31: end
+Thread-30: end
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="セマフォ:スレッド">
+<h2>セマフォ:スレッド<a class="headerlink" href="#セマフォ:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッド数を制御をすることができる">
+<h3>スレッド数を制御をすることができる<a class="headerlink" href="#スレッド数を制御をすることができる" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
-<span></span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(threadName)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker1</span><span class="p">(</span><span class="n">lock</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker2</span><span class="p">(</span><span class="n">lock</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker3</span><span class="p">(</span><span class="n">lock</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="c1"># 2つのスレッドを走らせられるようになる。</span>
+    <span class="n">semaphore</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">semaphore</span><span class="p">,))</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker2</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">semaphore</span><span class="p">,))</span>
+    <span class="n">t3</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker3</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">semaphore</span><span class="p">,))</span>
+
+    <span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">t3</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Thread-46: start
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="キュー:スレッド">
+<h2>キュー:スレッド<a class="headerlink" href="#キュー:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッド間で入れたり受け取ったりできる。">
+<h3>スレッド間で入れたり受け取ったりできる。<a class="headerlink" href="#スレッド間で入れたり受け取ったりできる。" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(threadName)s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker1</span><span class="p">(</span><span class="n">queue</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+
+    <span class="c1">#データ挿入</span>
+    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker2</span><span class="p">(</span><span class="n">queue</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+
+    <span class="c1"># データの取り出し</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">queue</span><span class="p">,))</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker2</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">queue</span><span class="p">,))</span>
+
+    <span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Thread-51: start
+Thread-52: start
+Thread-52: 100
+Thread-52: 1000
+Thread-52: end
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="キューの応用的な使い方:スレッド">
+<h2>キューの応用的な使い方:スレッド<a class="headerlink" href="#キューの応用的な使い方:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(threadName)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker1</span><span class="p">(</span><span class="n">queue</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;#################&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+
+    <span class="c1"># タスク定義</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100000</span><span class="p">):</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1"># スレッド複数生成</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">queue</span><span class="p">,))</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;task are not done&quot;</span><span class="p">)</span>
+    <span class="n">queue</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;task are done&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)):</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Thread-53: start
+Thread-54: start
+Thread-55: start
+Thread-53: 0
+Thread-56: start
+Thread-57: start
+Thread-58: start
+Thread-54: 1
+Thread-59: start
+Thread-60: start
+Thread-61: start
+Thread-55: 2
+Thread-62: start
+MainThread: task are not done
+Thread-53: 3
+Thread-56: 4
+Thread-57: 5
+Thread-58: 6
+Thread-54: 7
+Thread-59: 8
+Thread-60: 9
+Thread-61: 10
+Thread-55: 11
+Thread-62: 12
+Thread-53: 13
+Thread-56: 14
+Thread-57: 15
+Thread-58: 16
+Thread-54: 17
+Thread-59: 18
+Thread-60: 19
+Thread-61: 20
+Thread-55: 21
+Thread-62: 22
+Thread-53: 23
+Thread-56: 24
+Thread-57: 25
+Thread-58: 26
+Thread-54: 27
+Thread-59: 28
+Thread-60: 29
+Thread-61: 30
+Thread-55: 31
+Thread-62: 32
+Thread-53: 33
+Thread-56: 34
+Thread-57: 35
+Thread-58: 36
+Thread-54: 37
+Thread-59: 38
+Thread-60: 39
+Thread-61: 40
+Thread-55: 41
+Thread-62: 42
+Thread-53: 43
+Thread-56: 44
+Thread-57: 45
+Thread-58: 46
+Thread-54: 47
+Thread-59: 48
+Thread-60: 49
+Thread-61: 50
+Thread-55: 51
+Thread-62: 52
+Thread-53: 53
+Thread-56: 54
+Thread-57: 55
+Thread-58: 56
+Thread-54: 57
+Thread-59: 58
+Thread-60: 59
+Thread-61: 60
+Thread-55: 61
+Thread-62: 62
+Thread-53: 63
+Thread-56: 64
+Thread-57: 65
+Thread-58: 66
+Thread-54: 67
+Thread-59: 68
+Thread-60: 69
+Thread-61: 70
+Thread-55: 71
+Thread-62: 72
+Thread-53: 73
+Thread-56: 74
+Thread-57: 75
+Thread-58: 76
+Thread-54: 77
+Thread-59: 78
+Thread-60: 79
+Thread-61: 80
+Thread-55: 81
+Thread-62: 82
+Thread-53: 83
+Thread-56: 84
+Thread-57: 85
+Thread-58: 86
+Thread-54: 87
+Thread-59: 88
+Thread-60: 89
+Thread-61: 90
+Thread-55: 91
+Thread-62: 92
+Thread-53: 93
+Thread-56: 94
+Thread-57: 95
+Thread-58: 96
+Thread-54: 97
+Thread-59: 98
+Thread-60: 99
+Thread-61: 100
+Thread-55: 101
+Thread-62: 102
+Thread-53: 103
+Thread-56: 104
+Thread-57: 105
+Thread-58: 106
+Thread-54: 107
+Thread-59: 108
+Thread-60: 109
+Thread-61: 110
+Thread-55: 111
+Thread-62: 112
+Thread-53: 113
+Thread-56: 114
+Thread-57: 115
+Thread-58: 116
+Thread-54: 117
+Thread-59: 118
+Thread-60: 119
+Thread-61: 120
+Thread-55: 121
+Thread-62: 122
+Thread-53: 123
+Thread-56: 124
+Thread-57: 125
+Thread-58: 126
+Thread-54: 127
+Thread-59: 128
+Thread-60: 129
+Thread-61: 130
+Thread-55: 131
+Thread-62: 132
+Thread-53: 133
+Thread-56: 134
+Thread-57: 135
+Thread-58: 136
+Thread-54: 137
+Thread-59: 138
+Thread-60: 139
+Thread-61: 140
+Thread-55: 141
+Thread-62: 142
+Thread-53: 143
+Thread-56: 144
+Thread-57: 145
+Thread-58: 146
+Thread-54: 147
+Thread-59: 148
+Thread-60: 149
+Thread-61: 150
+Thread-55: 151
+Thread-62: 152
+Thread-53: 153
+Thread-56: 154
+Thread-57: 155
+Thread-58: 156
+Thread-54: 157
+Thread-59: 158
+Thread-60: 159
+Thread-61: 160
+Thread-55: 161
+Thread-62: 162
+Thread-53: 163
+Thread-56: 164
+Thread-57: 165
+Thread-58: 166
+Thread-54: 167
+Thread-59: 168
+Thread-60: 169
+Thread-61: 170
+Thread-55: 171
+Thread-62: 172
+Thread-53: 173
+Thread-56: 174
+Thread-57: 175
+Thread-58: 176
+Thread-54: 177
+Thread-59: 178
+Thread-60: 179
+Thread-61: 180
+Thread-55: 181
+Thread-62: 182
+Thread-53: 183
+Thread-56: 184
+Thread-57: 185
+Thread-58: 186
+Thread-54: 187
+Thread-59: 188
+Thread-60: 189
+Thread-61: 190
+Thread-55: 191
+Thread-62: 192
+Thread-53: 193
+Thread-56: 194
+Thread-57: 195
+Thread-58: 196
+Thread-54: 197
+Thread-59: 198
+Thread-60: 199
+Thread-61: 200
+Thread-55: 201
+Thread-62: 202
+Thread-53: 203
+Thread-56: 204
+Thread-57: 205
+Thread-58: 206
+Thread-54: 207
+Thread-59: 208
+Thread-60: 209
+Thread-61: 210
+Thread-55: 211
+Thread-62: 212
+Thread-53: 213
+Thread-56: 214
+Thread-57: 215
+Thread-58: 216
+Thread-54: 217
+Thread-59: 218
+Thread-60: 219
+Thread-61: 220
+Thread-55: 221
+Thread-62: 222
+Thread-53: 223
+Thread-56: 224
+Thread-57: 225
+Thread-58: 226
+Thread-54: 227
+Thread-59: 228
+Thread-60: 229
+Thread-61: 230
+Thread-55: 231
+Thread-62: 232
+Thread-53: 233
+Thread-56: 234
+Thread-57: 235
+Thread-58: 236
+Thread-54: 237
+Thread-59: 238
+Thread-60: 239
+Thread-61: 240
+Thread-55: 241
+Thread-62: 242
+Thread-53: 243
+Thread-56: 244
+Thread-57: 245
+Thread-58: 246
+Thread-54: 247
+Thread-59: 248
+Thread-60: 249
+Thread-61: 250
+Thread-55: 251
+Thread-62: 252
+Thread-53: 253
+Thread-56: 254
+Thread-57: 255
+Thread-58: 256
+Thread-54: 257
+Thread-59: 258
+Thread-60: 259
+Thread-61: 260
+Thread-55: 261
+Thread-62: 262
+Thread-53: 263
+Thread-56: 264
+Thread-57: 265
+Thread-58: 266
+Thread-54: 267
+Thread-59: 268
+Thread-60: 269
+Thread-61: 270
+Thread-55: 271
+Thread-62: 272
+Thread-53: 273
+Thread-56: 274
+Thread-57: 275
+Thread-58: 276
+Thread-54: 277
+Thread-59: 278
+Thread-60: 279
+Thread-61: 280
+Thread-55: 281
+Thread-62: 282
+Thread-53: 283
+Thread-56: 284
+Thread-57: 285
+Thread-58: 286
+Thread-54: 287
+Thread-59: 288
+Thread-60: 289
+Thread-61: 290
+Thread-55: 291
+Thread-62: 292
+Thread-53: 293
+Thread-56: 294
+Thread-57: 295
+Thread-58: 296
+Thread-54: 297
+Thread-59: 298
+Thread-60: 299
+Thread-61: 300
+Thread-55: 301
+Thread-62: 302
+Thread-53: 303
+Thread-56: 304
+Thread-57: 305
+Thread-58: 306
+Thread-54: 307
+Thread-59: 308
+Thread-60: 309
+Thread-61: 310
+Thread-55: 311
+Thread-62: 312
+Thread-53: 313
+Thread-56: 314
+Thread-57: 315
+Thread-58: 316
+Thread-54: 317
+Thread-59: 318
+Thread-60: 319
+Thread-61: 320
+Thread-55: 321
+Thread-62: 322
+Thread-53: 323
+Thread-56: 324
+Thread-57: 325
+Thread-58: 326
+Thread-54: 327
+Thread-59: 328
+Thread-60: 329
+Thread-61: 330
+Thread-55: 331
+Thread-62: 332
+Thread-53: 333
+Thread-56: 334
+Thread-57: 335
+Thread-58: 336
+Thread-54: 337
+Thread-59: 338
+Thread-60: 339
+Thread-61: 340
+Thread-55: 341
+Thread-62: 342
+Thread-53: 343
+Thread-56: 344
+Thread-57: 345
+Thread-58: 346
+Thread-54: 347
+Thread-59: 348
+Thread-60: 349
+Thread-61: 350
+Thread-55: 351
+Thread-62: 352
+Thread-53: 353
+Thread-56: 354
+Thread-57: 355
+Thread-58: 356
+Thread-54: 357
+Thread-59: 358
+Thread-60: 359
+Thread-61: 360
+Thread-55: 361
+Thread-62: 362
+Thread-53: 363
+Thread-56: 364
+Thread-57: 365
+Thread-58: 366
+Thread-54: 367
+Thread-59: 368
+Thread-60: 369
+Thread-61: 370
+Thread-55: 371
+Thread-62: 372
+Thread-53: 373
+Thread-56: 374
+Thread-57: 375
+Thread-58: 376
+Thread-54: 377
+Thread-59: 378
+Thread-60: 379
+Thread-61: 380
+Thread-55: 381
+Thread-62: 382
+Thread-53: 383
+Thread-56: 384
+Thread-57: 385
+Thread-58: 386
+Thread-54: 387
+Thread-59: 388
+Thread-60: 389
+Thread-61: 390
+Thread-55: 391
+Thread-62: 392
+Thread-53: 393
+Thread-56: 394
+Thread-57: 395
+Thread-58: 396
+Thread-54: 397
+Thread-59: 398
+Thread-60: 399
+Thread-61: 400
+Thread-55: 401
+Thread-62: 402
+Thread-53: 403
+Thread-56: 404
+Thread-57: 405
+Thread-58: 406
+Thread-54: 407
+Thread-59: 408
+Thread-60: 409
+Thread-61: 410
+Thread-55: 411
+Thread-62: 412
+Thread-53: 413
+Thread-56: 414
+Thread-57: 415
+Thread-58: 416
+Thread-54: 417
+Thread-59: 418
+Thread-60: 419
+Thread-61: 420
+Thread-55: 421
+Thread-62: 422
+Thread-53: 423
+Thread-56: 424
+Thread-57: 425
+Thread-57: 435
+Thread-54: 427
+Thread-59: 428
+Thread-60: 429
+Thread-61: 430
+Thread-55: 431
+Thread-62: 432
+Thread-53: 433
+Thread-56: 434
+Thread-58: 426
+Thread-57: 436
+Thread-54: 437
+Thread-59: 438
+Thread-60: 439
+Thread-61: 440
+Thread-39: end
+Thread-55: 441
+Thread-62: 442
+Thread-53: 443
+Thread-56: 444
+Thread-58: 445
+Thread-57: 446
+Thread-54: 447
+Thread-59: 448
+Thread-60: 449
+Thread-61: 450
+Thread-39: start
+Thread-55: 451
+Thread-62: 452
+Thread-53: 453
+Thread-56: 454
+Thread-58: 455
+Thread-57: 456
+Thread-54: 457
+Thread-59: 458
+Thread-60: 459
+Thread-61: 460
+Thread-55: 461
+Thread-62: 462
+Thread-53: 463
+Thread-56: 464
+Thread-58: 465
+Thread-57: 466
+Thread-54: 467
+Thread-59: 468
+Thread-60: 469
+Thread-61: 470
+Thread-55: 471
+Thread-62: 472
+Thread-53: 473
+Thread-56: 474
+Thread-58: 475
+Thread-57: 476
+Thread-54: 477
+Thread-59: 478
+Thread-60: 479
+Thread-61: 480
+Thread-55: 481
+Thread-62: 482
+Thread-53: 483
+Thread-56: 484
+Thread-58: 485
+Thread-57: 486
+Thread-54: 487
+Thread-59: 488
+Thread-60: 489
+Thread-61: 490
+Thread-55: 491
+Thread-62: 492
+Thread-53: 493
+Thread-56: 494
+Thread-58: 495
+Thread-57: 496
+Thread-54: 497
+Thread-59: 498
+Thread-60: 499
+Thread-61: 500
+Thread-55: 501
+Thread-62: 502
+Thread-53: 503
+Thread-56: 504
+Thread-58: 505
+Thread-57: 506
+Thread-54: 507
+Thread-59: 508
+Thread-60: 509
+Thread-61: 510
+Thread-55: 511
+Thread-62: 512
+Thread-53: 513
+Thread-56: 514
+Thread-58: 515
+Thread-57: 516
+Thread-54: 517
+Thread-59: 518
+Thread-60: 519
+Thread-61: 520
+Thread-55: 521
+Thread-62: 522
+Thread-53: 523
+Thread-56: 524
+Thread-58: 525
+Thread-57: 526
+Thread-54: 527
+Thread-59: 528
+Thread-60: 529
+Thread-61: 530
+Thread-55: 531
+Thread-62: 532
+Thread-53: 533
+Thread-56: 534
+Thread-58: 535
+Thread-57: 536
+Thread-54: 537
+Thread-59: 538
+Thread-60: 539
+Thread-61: 540
+Thread-55: 541
+Thread-62: 542
+Thread-53: 543
+Thread-56: 544
+Thread-58: 545
+Thread-57: 546
+Thread-54: 547
+Thread-59: 548
+Thread-60: 549
+Thread-61: 550
+Thread-55: 551
+Thread-62: 552
+Thread-53: 553
+Thread-56: 554
+Thread-58: 555
+Thread-57: 556
+Thread-54: 557
+Thread-59: 558
+Thread-60: 559
+Thread-61: 560
+Thread-55: 561
+Thread-62: 562
+Thread-53: 563
+Thread-56: 564
+Thread-58: 565
+Thread-57: 566
+Thread-54: 567
+Thread-59: 568
+Thread-60: 569
+Thread-61: 570
+Thread-55: 571
+Thread-62: 572
+Thread-53: 573
+Thread-56: 574
+Thread-58: 575
+Thread-57: 576
+Thread-54: 577
+Thread-59: 578
+Thread-60: 579
+Thread-61: 580
+Thread-55: 581
+Thread-62: 582
+Thread-53: 583
+Thread-56: 584
+Thread-58: 585
+Thread-57: 586
+Thread-54: 587
+Thread-59: 588
+Thread-60: 589
+Thread-61: 590
+Thread-55: 591
+Thread-62: 592
+Thread-53: 593
+Thread-56: 594
+Thread-58: 595
+Thread-57: 596
+Thread-54: 597
+Thread-59: 598
+Thread-60: 599
+Thread-61: 600
+Thread-55: 601
+Thread-62: 602
+Thread-53: 603
+Thread-56: 604
+Thread-58: 605
+Thread-57: 606
+Thread-54: 607
+Thread-59: 608
+Thread-60: 609
+Thread-61: 610
+Thread-55: 611
+Thread-62: 612
+Thread-53: 613
+Thread-56: 614
+Thread-58: 615
+Thread-57: 616
+Thread-54: 617
+Thread-59: 618
+Thread-60: 619
+Thread-61: 620
+Thread-55: 621
+Thread-62: 622
+Thread-53: 623
+Thread-56: 624
+Thread-58: 625
+Thread-57: 626
+Thread-54: 627
+Thread-59: 628
+Thread-60: 629
+Thread-61: 630
+Thread-55: 631
+Thread-62: 632
+Thread-53: 633
+Thread-56: 634
+Thread-58: 635
+Thread-57: 636
+Thread-54: 637
+Thread-59: 638
+Thread-60: 639
+Thread-61: 640
+Thread-55: 641
+Thread-62: 642
+Thread-53: 643
+Thread-56: 644
+Thread-58: 645
+Thread-57: 646
+Thread-54: 647
+Thread-59: 648
+Thread-60: 649
+Thread-61: 650
+Thread-55: 651
+Thread-62: 652
+Thread-53: 653
+Thread-56: 654
+Thread-58: 655
+Thread-57: 656
+Thread-54: 657
+Thread-59: 658
+Thread-60: 659
+Thread-61: 660
+Thread-55: 661
+Thread-62: 662
+Thread-53: 663
+Thread-56: 664
+Thread-58: 665
+Thread-57: 666
+Thread-54: 667
+Thread-59: 668
+Thread-60: 669
+Thread-61: 670
+Thread-55: 671
+Thread-62: 672
+Thread-53: 673
+Thread-56: 674
+Thread-58: 675
+Thread-57: 676
+Thread-54: 677
+Thread-59: 678
+Thread-60: 679
+Thread-61: 680
+Thread-55: 681
+Thread-62: 682
+Thread-53: 683
+Thread-56: 684
+Thread-58: 685
+Thread-57: 686
+Thread-54: 687
+Thread-59: 688
+Thread-60: 689
+Thread-61: 690
+Thread-55: 691
+Thread-62: 692
+Thread-53: 693
+Thread-56: 694
+Thread-58: 695
+Thread-57: 696
+Thread-54: 697
+Thread-59: 698
+Thread-60: 699
+Thread-61: 700
+Thread-55: 701
+Thread-62: 702
+Thread-53: 703
+Thread-56: 704
+Thread-58: 705
+Thread-57: 706
+Thread-54: 707
+Thread-59: 708
+Thread-60: 709
+Thread-61: 710
+Thread-55: 711
+Thread-62: 712
+Thread-53: 713
+Thread-56: 714
+Thread-58: 715
+Thread-57: 716
+Thread-54: 717
+Thread-59: 718
+Thread-60: 719
+Thread-61: 720
+Thread-55: 721
+Thread-62: 722
+Thread-53: 723
+Thread-56: 724
+Thread-58: 725
+Thread-57: 726
+Thread-54: 727
+Thread-59: 728
+Thread-60: 729
+Thread-61: 730
+Thread-55: 731
+Thread-62: 732
+Thread-53: 733
+Thread-56: 734
+Thread-58: 735
+Thread-57: 736
+Thread-54: 737
+Thread-59: 738
+Thread-60: 739
+Thread-61: 740
+Thread-55: 741
+Thread-62: 742
+Thread-53: 743
+Thread-56: 744
+Thread-58: 745
+Thread-57: 746
+Thread-54: 747
+Thread-59: 748
+Thread-60: 749
+Thread-61: 750
+Thread-55: 751
+Thread-62: 752
+Thread-53: 753
+Thread-56: 754
+Thread-58: 755
+Thread-57: 756
+Thread-54: 757
+Thread-59: 758
+Thread-60: 759
+Thread-61: 760
+Thread-55: 761
+Thread-62: 762
+Thread-53: 763
+Thread-56: 764
+Thread-58: 765
+Thread-57: 766
+Thread-54: 767
+Thread-59: 768
+Thread-60: 769
+Thread-61: 770
+Thread-55: 771
+Thread-62: 772
+Thread-53: 773
+Thread-56: 774
+Thread-58: 775
+Thread-57: 776
+Thread-54: 777
+Thread-59: 778
+Thread-60: 779
+Thread-61: 780
+Thread-55: 781
+Thread-62: 782
+Thread-53: 783
+Thread-56: 784
+Thread-58: 785
+Thread-57: 786
+Thread-54: 787
+Thread-59: 788
+Thread-60: 789
+Thread-61: 790
+Thread-55: 791
+Thread-62: 792
+Thread-53: 793
+Thread-56: 794
+Thread-58: 795
+Thread-57: 796
+Thread-54: 797
+Thread-59: 798
+Thread-60: 799
+Thread-61: 800
+Thread-55: 801
+Thread-62: 802
+Thread-53: 803
+Thread-56: 804
+Thread-58: 805
+Thread-57: 806
+Thread-54: 807
+Thread-59: 808
+Thread-60: 809
+Thread-61: 810
+Thread-55: 811
+Thread-62: 812
+Thread-53: 813
+Thread-56: 814
+Thread-58: 815
+Thread-57: 816
+Thread-54: 817
+Thread-59: 818
+Thread-60: 819
+Thread-61: 820
+Thread-55: 821
+Thread-62: 822
+Thread-53: 823
+Thread-56: 824
+Thread-58: 825
+Thread-57: 826
+Thread-54: 827
+Thread-59: 828
+Thread-60: 829
+Thread-61: 830
+Thread-55: 831
+Thread-62: 832
+Thread-53: 833
+Thread-56: 834
+Thread-58: 835
+Thread-57: 836
+Thread-54: 837
+Thread-59: 838
+Thread-60: 839
+Thread-61: 840
+Thread-55: 841
+Thread-62: 842
+Thread-53: 843
+Thread-56: 844
+Thread-58: 845
+Thread-57: 846
+Thread-54: 847
+Thread-59: 848
+Thread-60: 849
+Thread-61: 850
+Thread-55: 851
+Thread-62: 852
+Thread-53: 853
+Thread-56: 854
+Thread-58: 855
+Thread-57: 856
+Thread-54: 857
+Thread-59: 858
+Thread-60: 859
+Thread-61: 860
+Thread-55: 861
+Thread-62: 862
+Thread-53: 863
+Thread-56: 864
+Thread-58: 865
+Thread-57: 866
+Thread-54: 867
+Thread-59: 868
+Thread-60: 869
+Thread-61: 870
+Thread-55: 871
+Thread-55: 881
+Thread-53: 873
+Thread-56: 874
+Thread-58: 875
+Thread-57: 876
+Thread-54: 877
+Thread-59: 878
+Thread-60: 879
+Thread-61: 880
+Thread-62: 872
+Thread-55: 882
+Thread-53: 883
+Thread-56: 884
+Thread-58: 885
+Thread-57: 886
+Thread-54: 887
+Thread-59: 888
+Thread-60: 889
+Thread-61: 890
+Thread-62: 891
+Thread-55: 892
+Thread-53: 893
+Thread-56: 894
+Thread-58: 895
+Thread-57: 896
+Thread-54: 897
+Thread-59: 898
+Thread-60: 899
+Thread-61: 900
+Thread-62: 901
+Thread-55: 902
+Thread-53: 903
+Thread-56: 904
+Thread-58: 905
+Thread-57: 906
+Thread-54: 907
+Thread-59: 908
+Thread-60: 909
+Thread-61: 910
+Thread-62: 911
+Thread-55: 912
+Thread-53: 913
+Thread-56: 914
+Thread-58: 915
+Thread-57: 916
+Thread-54: 917
+Thread-59: 918
+Thread-60: 919
+Thread-61: 920
+Thread-62: 921
+Thread-55: 922
+Thread-53: 923
+Thread-56: 924
+Thread-58: 925
+Thread-57: 926
+Thread-54: 927
+Thread-59: 928
+Thread-60: 929
+Thread-61: 930
+Thread-62: 931
+Thread-55: 932
+Thread-53: 933
+Thread-56: 934
+Thread-58: 935
+Thread-57: 936
+Thread-54: 937
+Thread-59: 938
+Thread-60: 939
+Thread-61: 940
+Thread-62: 941
+Thread-55: 942
+Thread-53: 943
+Thread-56: 944
+Thread-58: 945
+Thread-57: 946
+Thread-54: 947
+Thread-59: 948
+Thread-60: 949
+Thread-61: 950
+Thread-62: 951
+Thread-55: 952
+Thread-53: 953
+Thread-56: 954
+Thread-58: 955
+Thread-57: 956
+Thread-54: 957
+Thread-59: 958
+Thread-60: 959
+Thread-61: 960
+Thread-62: 961
+Thread-55: 962
+Thread-53: 963
+Thread-56: 964
+Thread-58: 965
+Thread-57: 966
+Thread-54: 967
+Thread-59: 968
+Thread-60: 969
+Thread-61: 970
+Thread-62: 971
+Thread-55: 972
+Thread-53: 973
+Thread-56: 974
+Thread-58: 975
+Thread-57: 976
+Thread-54: 977
+Thread-59: 978
+Thread-60: 979
+Thread-61: 980
+Thread-62: 981
+Thread-55: 982
+Thread-53: 983
+Thread-56: 984
+Thread-58: 985
+Thread-57: 986
+Thread-54: 987
+Thread-59: 988
+Thread-60: 989
+Thread-61: 990
+Thread-62: 991
+Thread-55: 992
+Thread-53: 993
+Thread-56: 994
+Thread-58: 995
+Thread-57: 996
+Thread-54: 997
+Thread-59: 998
+Thread-60: 999
+Thread-61: 1000
+Thread-62: 1001
+Thread-55: 1002
+Thread-53: 1003
+Thread-56: 1004
+Thread-58: 1005
+Thread-57: 1006
+Thread-54: 1007
+Thread-59: 1008
+Thread-60: 1009
+Thread-61: 1010
+Thread-62: 1011
+Thread-55: 1012
+Thread-53: 1013
+Thread-56: 1014
+Thread-58: 1015
+Thread-57: 1016
+Thread-54: 1017
+Thread-59: 1018
+Thread-60: 1019
+Thread-61: 1020
+Thread-62: 1021
+Thread-55: 1022
+Thread-53: 1023
+Thread-56: 1024
+Thread-58: 1025
+Thread-57: 1026
+Thread-54: 1027
+Thread-59: 1028
+Thread-60: 1029
+Thread-61: 1030
+Thread-62: 1031
+Thread-55: 1032
+Thread-53: 1033
+Thread-56: 1034
+Thread-58: 1035
+Thread-57: 1036
+Thread-54: 1037
+Thread-59: 1038
+Thread-60: 1039
+Thread-61: 1040
+Thread-62: 1041
+Thread-55: 1042
+Thread-53: 1043
+Thread-56: 1044
+Thread-58: 1045
+Thread-57: 1046
+Thread-54: 1047
+Thread-59: 1048
+Thread-60: 1049
+Thread-61: 1050
+Thread-62: 1051
+Thread-55: 1052
+Thread-53: 1053
+Thread-56: 1054
+Thread-58: 1055
+Thread-57: 1056
+Thread-54: 1057
+Thread-59: 1058
+Thread-60: 1059
+Thread-61: 1060
+Thread-62: 1061
+Thread-55: 1062
+Thread-53: 1063
+Thread-56: 1064
+Thread-58: 1065
+Thread-57: 1066
+Thread-54: 1067
+Thread-59: 1068
+Thread-60: 1069
+Thread-61: 1070
+Thread-62: 1071
+Thread-55: 1072
+Thread-53: 1073
+Thread-56: 1074
+Thread-58: 1075
+Thread-57: 1076
+Thread-54: 1077
+Thread-59: 1078
+Thread-60: 1079
+Thread-61: 1080
+Thread-62: 1081
+Thread-55: 1082
+Thread-53: 1083
+Thread-56: 1084
+Thread-58: 1085
+Thread-57: 1086
+Thread-54: 1087
+Thread-59: 1088
+Thread-60: 1089
+Thread-61: 1090
+Thread-62: 1091
+Thread-55: 1092
+Thread-53: 1093
+Thread-56: 1094
+Thread-58: 1095
+Thread-57: 1096
+Thread-54: 1097
+Thread-59: 1098
+Thread-60: 1099
+Thread-61: 1100
+Thread-62: 1101
+Thread-55: 1102
+Thread-53: 1103
+Thread-56: 1104
+Thread-58: 1105
+Thread-57: 1106
+Thread-54: 1107
+Thread-59: 1108
+Thread-60: 1109
+Thread-61: 1110
+Thread-62: 1111
+Thread-55: 1112
+Thread-53: 1113
+Thread-56: 1114
+Thread-58: 1115
+Thread-57: 1116
+Thread-54: 1117
+Thread-59: 1118
+Thread-60: 1119
+Thread-61: 1120
+Thread-62: 1121
+Thread-55: 1122
+Thread-53: 1123
+Thread-56: 1124
+Thread-58: 1125
+Thread-57: 1126
+Thread-54: 1127
+Thread-59: 1128
+Thread-60: 1129
+Thread-61: 1130
+Thread-62: 1131
+Thread-55: 1132
+Thread-53: 1133
+Thread-56: 1134
+Thread-58: 1135
+Thread-57: 1136
+Thread-54: 1137
+Thread-59: 1138
+Thread-60: 1139
+Thread-61: 1140
+Thread-62: 1141
+Thread-55: 1142
+Thread-53: 1143
+Thread-56: 1144
+Thread-58: 1145
+Thread-57: 1146
+Thread-54: 1147
+Thread-59: 1148
+Thread-60: 1149
+Thread-61: 1150
+Thread-62: 1151
+Thread-55: 1152
+Thread-53: 1153
+Thread-56: 1154
+Thread-58: 1155
+Thread-57: 1156
+Thread-54: 1157
+Thread-59: 1158
+Thread-60: 1159
+Thread-61: 1160
+Thread-62: 1161
+Thread-55: 1162
+Thread-53: 1163
+Thread-56: 1164
+Thread-58: 1165
+Thread-57: 1166
+Thread-54: 1167
+Thread-59: 1168
+Thread-60: 1169
+Thread-61: 1170
+Thread-62: 1171
+Thread-55: 1172
+Thread-53: 1173
+Thread-56: 1174
+Thread-58: 1175
+Thread-57: 1176
+Thread-54: 1177
+Thread-59: 1178
+Thread-60: 1179
+Thread-61: 1180
+Thread-62: 1181
+Thread-55: 1182
+Thread-53: 1183
+Thread-56: 1184
+Thread-58: 1185
+Thread-57: 1186
+Thread-54: 1187
+Thread-59: 1188
+Thread-60: 1189
+Thread-61: 1190
+Thread-62: 1191
+Thread-55: 1192
+Thread-53: 1193
+Thread-56: 1194
+Thread-58: 1195
+Thread-57: 1196
+Thread-54: 1197
+Thread-59: 1198
+Thread-60: 1199
+Thread-61: 1200
+Thread-62: 1201
+Thread-55: 1202
+Thread-53: 1203
+Thread-56: 1204
+Thread-58: 1205
+Thread-57: 1206
+Thread-54: 1207
+Thread-59: 1208
+Thread-60: 1209
+Thread-61: 1210
+Thread-62: 1211
+Thread-55: 1212
+Thread-53: 1213
+Thread-56: 1214
+Thread-58: 1215
+Thread-57: 1216
+Thread-54: 1217
+Thread-59: 1218
+Thread-60: 1219
+Thread-61: 1220
+Thread-62: 1221
+Thread-55: 1222
+Thread-53: 1223
+Thread-56: 1224
+Thread-58: 1225
+Thread-57: 1226
+Thread-54: 1227
+Thread-59: 1228
+Thread-60: 1229
+Thread-61: 1230
+Thread-62: 1231
+Thread-55: 1232
+Thread-53: 1233
+Thread-56: 1234
+Thread-58: 1235
+Thread-57: 1236
+Thread-54: 1237
+Thread-59: 1238
+Thread-60: 1239
+Thread-61: 1240
+Thread-62: 1241
+Thread-55: 1242
+Thread-53: 1243
+Thread-56: 1244
+Thread-58: 1245
+Thread-57: 1246
+Thread-54: 1247
+Thread-59: 1248
+Thread-60: 1249
+Thread-61: 1250
+Thread-62: 1251
+Thread-55: 1252
+Thread-53: 1253
+Thread-56: 1254
+Thread-58: 1255
+Thread-57: 1256
+Thread-54: 1257
+Thread-59: 1258
+Thread-60: 1259
+Thread-61: 1260
+Thread-62: 1261
+Thread-55: 1262
+Thread-53: 1263
+Thread-56: 1264
+Thread-58: 1265
+Thread-57: 1266
+Thread-54: 1267
+Thread-59: 1268
+Thread-60: 1269
+Thread-61: 1270
+Thread-62: 1271
+Thread-55: 1272
+Thread-53: 1273
+Thread-56: 1274
+Thread-58: 1275
+Thread-57: 1276
+Thread-54: 1277
+Thread-59: 1278
+Thread-60: 1279
+Thread-61: 1280
+Thread-62: 1281
+Thread-55: 1282
+Thread-53: 1283
+Thread-56: 1284
+Thread-58: 1285
+Thread-57: 1286
+Thread-54: 1287
+Thread-59: 1288
+Thread-60: 1289
+Thread-61: 1290
+Thread-62: 1291
+Thread-55: 1292
+Thread-53: 1293
+Thread-56: 1294
+Thread-58: 1295
+Thread-57: 1296
+Thread-54: 1297
+Thread-59: 1298
+Thread-60: 1299
+Thread-61: 1300
+Thread-62: 1301
+Thread-55: 1302
+Thread-53: 1303
+Thread-56: 1304
+Thread-58: 1305
+Thread-57: 1306
+Thread-54: 1307
+Thread-59: 1308
+Thread-60: 1309
+Thread-61: 1310
+Thread-62: 1311
+Thread-55: 1312
+Thread-53: 1313
+Thread-56: 1314
+Thread-58: 1315
+Thread-57: 1316
+Thread-54: 1317
+Thread-59: 1318
+Thread-60: 1319
+Thread-61: 1320
+Thread-62: 1321
+Thread-55: 1322
+Thread-53: 1323
+Thread-56: 1324
+Thread-58: 1325
+Thread-57: 1326
+Thread-54: 1327
+Thread-59: 1328
+Thread-60: 1329
+Thread-61: 1330
+Thread-62: 1331
+Thread-55: 1332
+Thread-53: 1333
+Thread-56: 1334
+Thread-58: 1335
+Thread-57: 1336
+Thread-54: 1337
+Thread-59: 1338
+Thread-60: 1339
+Thread-61: 1340
+Thread-62: 1341
+Thread-55: 1342
+Thread-53: 1343
+Thread-56: 1344
+Thread-58: 1345
+Thread-57: 1346
+Thread-54: 1347
+Thread-59: 1348
+Thread-60: 1349
+Thread-61: 1350
+Thread-62: 1351
+Thread-55: 1352
+Thread-53: 1353
+Thread-56: 1354
+Thread-58: 1355
+Thread-57: 1356
+Thread-54: 1357
+Thread-59: 1358
+Thread-60: 1359
+Thread-61: 1360
+Thread-62: 1361
+Thread-55: 1362
+Thread-53: 1363
+Thread-56: 1364
+Thread-58: 1365
+Thread-57: 1366
+Thread-54: 1367
+Thread-59: 1368
+Thread-60: 1369
+Thread-61: 1370
+Thread-62: 1371
+Thread-55: 1372
+Thread-53: 1373
+Thread-56: 1374
+Thread-58: 1375
+Thread-57: 1376
+Thread-54: 1377
+Thread-59: 1378
+Thread-60: 1379
+Thread-61: 1380
+Thread-62: 1381
+Thread-55: 1382
+Thread-53: 1383
+Thread-56: 1384
+Thread-58: 1385
+Thread-57: 1386
+Thread-54: 1387
+Thread-59: 1388
+Thread-60: 1389
+Thread-61: 1390
+Thread-62: 1391
+Thread-55: 1392
+Thread-53: 1393
+Thread-56: 1394
+Thread-58: 1395
+Thread-57: 1396
+Thread-54: 1397
+Thread-59: 1398
+Thread-60: 1399
+Thread-61: 1400
+Thread-62: 1401
+Thread-55: 1402
+Thread-53: 1403
+Thread-56: 1404
+Thread-58: 1405
+Thread-57: 1406
+Thread-54: 1407
+Thread-59: 1408
+Thread-60: 1409
+Thread-61: 1410
+Thread-62: 1411
+Thread-55: 1412
+Thread-53: 1413
+Thread-56: 1414
+Thread-58: 1415
+Thread-57: 1416
+Thread-54: 1417
+Thread-59: 1418
+Thread-60: 1419
+Thread-61: 1420
+Thread-62: 1421
+Thread-55: 1422
+Thread-53: 1423
+Thread-56: 1424
+Thread-58: 1425
+Thread-57: 1426
+Thread-54: 1427
+Thread-59: 1428
+Thread-60: 1429
+Thread-61: 1430
+Thread-62: 1431
+Thread-55: 1432
+Thread-53: 1433
+Thread-56: 1434
+Thread-58: 1435
+Thread-57: 1436
+Thread-54: 1437
+Thread-59: 1438
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -460,6 +2190,268 @@ Thread-10: 200
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="condition:スレッド">
+<h2>condition:スレッド<a class="headerlink" href="#condition:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="コンディションはスレッドの制御をすることができる">
+<h3>コンディションはスレッドの制御をすることができる<a class="headerlink" href="#コンディションはスレッドの制御をすることができる" title="このヘッドラインへのパーマリンク"></a></h3>
+<p>スレッド3が先に走って終わったら スレッド1が先に走って終わったら スレッド2が実行される</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(threadName)s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker1</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">condition</span><span class="p">:</span>
+        <span class="n">condition</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker2</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">condition</span><span class="p">:</span>
+        <span class="n">condition</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker3</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">condition</span><span class="p">:</span>
+        <span class="n">condition</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+        <span class="c1"># これが発火してから残りのworker1-2が動き出す。</span>
+        <span class="n">condition</span><span class="o">.</span><span class="n">notifyAll</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">()</span>
+
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">condition</span><span class="p">,))</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker2</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">condition</span><span class="p">,))</span>
+    <span class="n">t3</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker3</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">condition</span><span class="p">,))</span>
+
+    <span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">t3</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="event:スレッド">
+<h2>event:スレッド<a class="headerlink" href="#event:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="setが押されてから他のスレッドが動き始める">
+<h3>setが押されてから他のスレッドが動き始める<a class="headerlink" href="#setが押されてから他のスレッドが動き始める" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(threadName)s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker1</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker2</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker3</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+    <span class="c1"># これがハッカしてから残りのworker1-2が動き出す</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">event</span><span class="p">,))</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker2</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">event</span><span class="p">,))</span>
+    <span class="n">t3</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker3</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">event</span><span class="p">,))</span>
+
+    <span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">t3</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Thread-37: start
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="バリア:スレッド">
+<h2>バリア:スレッド<a class="headerlink" href="#バリア:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッドが2つ立ち上がらないように次まで進まない">
+<h3>スレッドが2つ立ち上がらないように次まで進まない<a class="headerlink" href="#スレッドが2つ立ち上がらないように次まで進まない" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(threadName)s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker1</span><span class="p">(</span><span class="n">barrier</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">barrier</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker2</span><span class="p">(</span><span class="n">barrier</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">barrier</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># スレッド二つ立ち上がるまで次に進まない</span>
+    <span class="n">barrier</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Barrier</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">barrier</span><span class="p">,))</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker2</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">barrier</span><span class="p">,))</span>
+
+    <span class="c1">#ここまでスレッドが走るのはまつ</span>
+    <span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Thread-39: start
+Thread-38: start
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="socket通信">
+<h2>socket通信<a class="headerlink" href="#socket通信" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="client実装">
+<h3>client実装<a class="headerlink" href="#client実装" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="c1"># ソケット作成</span>
+<span class="c1"># TCP通信を行う</span>
+<span class="n">so</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+
+<span class="c1"># サーバーに接続</span>
+<span class="n">so</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">))</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;メッセージを送る&quot;</span><span class="p">)</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">so</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">msg</span> <span class="o">==</span> <span class="s2">&quot;exit&quot;</span><span class="p">:</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="server実装">
+<h3>server実装<a class="headerlink" href="#server実装" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="n">so</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+
+<span class="n">so</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">))</span>
+
+<span class="n">so</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">c</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">so</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="n">dataStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dataStr</span> <span class="o">==</span> <span class="s2">&quot;exit&quot;</span><span class="p">:</span>
+        <span class="k">break</span>
+
+    <span class="c1">#受け取ったデータを表示する</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dataStr</span><span class="p">)</span>
+    <span class="c1"># 受け取ったデータをclientにおうむ返しする</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot;I recv your msg&quot;</span> <span class="o">+</span> <span class="n">dataStr</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
