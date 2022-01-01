@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-ティミネコの森へようこそ
+ティミネコの森のテーマを実行する
 ================================
 
 .. toctree::
@@ -16,7 +16,9 @@
    pages/3
    pages/4
    pages/5
-   pages/docker
+   pages/container/docker
+   pages/container/k8s
+   pages/vim
 
 Indices and tables
 
