@@ -58,12 +58,20 @@
 <li class="toctree-l3"><a class="reference internal" href="#同じ役割を入れるということ">同じ役割を入れるということ</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#リスコフの置換原則">リスコフの置換原則</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#継承とか実行できるものは継承先を実行できるようにする。">継承とか実行できるものは継承先を実行できるようにする。</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#開放閉鎖の原則">開放閉鎖の原則</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ソースコードを変更するのではなく、追加して修正していく">ソースコードを変更するのではなく、追加して修正していく</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#インターフェース分離の法則">インターフェース分離の法則</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#いらないコードを書かないようにする。">いらないコードを書かないようにする。</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#依存性逆転の原則">依存性逆転の原則</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ソフトウェア間のモジュール間の依存関係を切り離す方法">ソフトウェア間のモジュール間の依存関係を切り離す方法</a></li>
 </ul>
 </li>
 </ul>
@@ -376,10 +384,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">self</span> <span class="k">as</span> <span class="nn">self</span>
-
-
-<span class="k">class</span> <span class="nc">Userinfo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span></span><span class="k">class</span> <span class="nc">Userinfo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">phone_number</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="n">age</span>
@@ -404,6 +409,82 @@ div.rendered_html tbody tr:hover {
 <span class="n">FikeManager</span><span class="o">.</span><span class="n">write_to_file</span><span class="p">(</span><span class="n">userinfo</span><span class="p">,</span> <span class="s2">&quot;tmp.txt&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+</section>
+</section>
+<section id="リスコフの置換原則">
+<h2>リスコフの置換原則<a class="headerlink" href="#リスコフの置換原則" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="継承とか実行できるものは継承先を実行できるようにする。">
+<h3>継承とか実行できるものは継承先を実行できるようにする。<a class="headerlink" href="#継承とか実行できるものは継承先を実行できるようにする。" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">class</span> <span class="nc">Rectangle</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">height</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span>
+
+    <span class="nd">@width</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">width</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span>
+
+    <span class="nd">@height</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">height</span>
+
+    <span class="k">def</span> <span class="nf">calc_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span>
+
+
+<span class="k">class</span> <span class="nc">Square</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">size</span>
+
+    <span class="nd">@Rectangle</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">size</span>
+
+    <span class="nd">@Rectangle</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">size</span>
+
+
+<span class="k">def</span> <span class="nf">print_area</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="n">change_to_width</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">change_to_height</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">change_to_width</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">change_to_height</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Square</span><span class="p">):</span>
+        <span class="n">change_to_height</span> <span class="o">=</span> <span class="n">change_to_height</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;予想=</span><span class="si">{}</span><span class="s2">,実際=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">change_to_height</span> <span class="o">*</span> <span class="n">change_to_width</span><span class="p">,</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">calc_area</span><span class="p">()</span>
+    <span class="p">))</span>
+
+
+<span class="n">rc</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">print_area</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
+
+<span class="n">sq</span> <span class="o">=</span> <span class="n">Square</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">print_area</span><span class="p">(</span><span class="n">sq</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+予想=200,実際=200
+予想=200,実際=400
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -435,6 +516,7 @@ div.rendered_html tbody tr:hover {
 
 <span class="c1"># 抽象クラス</span>
 <span class="sd">&quot;&quot;&quot;必ず継承先を使わないといけない&quot;&quot;&quot;</span>
+
 
 <span class="k">class</span> <span class="nc">Comparetion</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
     <span class="nd">@abstractmethod</span>
@@ -609,14 +691,98 @@ I swim
 I high jump
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</section>
+</section>
+<section id="依存性逆転の原則">
+<h2>依存性逆転の原則<a class="headerlink" href="#依存性逆転の原則" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="ソフトウェア間のモジュール間の依存関係を切り離す方法">
+<h3>ソフトウェア間のモジュール間の依存関係を切り離す方法<a class="headerlink" href="#ソフトウェア間のモジュール間の依存関係を切り離す方法" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
-<span></span>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">abstractproperty</span>
+
+
+<span class="c1">#interface(I)は具体的な処理の形は書かない。</span>
+<span class="k">class</span> <span class="nc">IBook</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+
+    <span class="c1"># 抽象先でgetterを所持しないといけない。</span>
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">IBook</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_content</span> <span class="o">=</span> <span class="n">content</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content</span>
+
+
+<span class="k">class</span> <span class="nc">EBook</span><span class="p">(</span><span class="n">IBook</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_content</span> <span class="o">=</span> <span class="n">content</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;E&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content</span>
+
+
+<span class="k">class</span> <span class="nc">IFormatter</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_book</span><span class="p">:</span> <span class="n">IBook</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">HtmlFormatter</span><span class="p">(</span><span class="n">IFormatter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_book</span><span class="p">:</span> <span class="n">IBook</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;h1&gt;&quot;</span> <span class="o">+</span> <span class="n">i_book</span><span class="o">.</span><span class="n">content</span> <span class="o">+</span> <span class="s2">&quot;&lt;/h1&gt;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">XmlFormatter</span><span class="p">(</span><span class="n">IFormatter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_book</span><span class="p">:</span> <span class="n">IBook</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;xml&gt;&quot;</span> <span class="o">+</span> <span class="n">i_book</span><span class="o">.</span><span class="n">content</span> <span class="o">+</span> <span class="s2">&quot;&lt;/xml&gt;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">Printer</span><span class="p">:</span>
+    <span class="c1"># 継承前がabstructだから、排除する</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_formatter</span><span class="p">:</span> <span class="n">IFormatter</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i_formatter</span> <span class="o">=</span> <span class="n">i_formatter</span>
+
+    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_book</span><span class="p">:</span> <span class="n">IBook</span><span class="p">):</span>
+        <span class="n">formatted_book</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i_formatter</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_book</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">formatted_book</span><span class="p">)</span>
+
+
+<span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="s2">&quot;My book&quot;</span><span class="p">)</span>
+<span class="n">html_formatter</span> <span class="o">=</span> <span class="n">HtmlFormatter</span><span class="p">()</span>
+<span class="n">html_printer</span> <span class="o">=</span> <span class="n">Printer</span><span class="p">(</span><span class="n">html_formatter</span><span class="p">)</span>
+
+<span class="n">html_printer</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+
+<span class="n">xml_formatter</span> <span class="o">=</span> <span class="n">XmlFormatter</span><span class="p">()</span>
+<span class="n">xml_printer</span> <span class="o">=</span> <span class="n">Printer</span><span class="p">(</span><span class="n">xml_formatter</span><span class="p">)</span>
+<span class="n">xml_printer</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+
+<span class="n">ebook</span> <span class="o">=</span> <span class="n">EBook</span><span class="p">(</span><span class="s2">&quot;My Ebook&quot;</span><span class="p">)</span>
+<span class="n">xml_printer</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">ebook</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;h1&gt;My book&lt;/h1&gt;
+&lt;xml&gt;My book&lt;/xml&gt;
+&lt;xml&gt;EMy Ebook&lt;/xml&gt;
+</pre></div></div>
 </div>
 </section>
 </section>
