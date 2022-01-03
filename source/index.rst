@@ -23,7 +23,7 @@
    pages/vim
    pages/python/diffcult
    pages/codeDesign/solid
-
+   pages/codeDesign/generatePattern
 
 
    pages/mamushi

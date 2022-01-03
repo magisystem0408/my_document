@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; MAMUSHI IS BEST  ドキュメント</title>
+  <title>生成に関するデザインパターン &mdash; MAMUSHI IS BEST  ドキュメント</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,9 @@
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../../genindex.html" />
-    <link rel="search" title="検索" href="../../search.html" /> 
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="猫マムシの礎" href="../mamushi.html" />
+    <link rel="prev" title="SOLID" href="solid.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,7 +42,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../1.html">基本的なやつ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../2.html">データ構造操作</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../3.html">整数とか素数とか</a></li>
@@ -50,8 +52,19 @@
 <li class="toctree-l1"><a class="reference internal" href="../container/k8s.html">インターネットの「航海士」(k8s)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../container/docker_ec2.html">「鯨」をEc2で飼育する時</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../vim.html">vim操作</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python/diffcult.html">pythonで理解するのが大変な分野のまとめ食い</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/diffcult.html">python、理解が大変な分野</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solid.html">SOLID</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">生成に関するデザインパターン</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#builder">builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#factoryメソッド">factoryメソッド</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#オブジェクトの生成と具体的な処理を分離することで、柔軟にオブジェクトを利用でき、再利用性を高める。">オブジェクトの生成と具体的な処理を分離することで、柔軟にオブジェクトを利用でき、再利用性を高める。</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#インターフェースで処理の骨組みを作り、サブクラスを用いてオブジェクトを作成する。サブクラスに応じて、作成されるオブジェクトのタイプを変える">インターフェースで処理の骨組みを作り、サブクラスを用いてオブジェクトを作成する。サブクラスに応じて、作成されるオブジェクトのタイプを変える</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../mamushi.html">猫マムシの礎</a></li>
 </ul>
 
@@ -69,7 +82,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>&lt;no title&gt;</li>
+      <li>生成に関するデザインパターン</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/pages/codeDesign/generatePattern.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -349,6 +362,245 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
+<section id="生成に関するデザインパターン">
+<h1>生成に関するデザインパターン<a class="headerlink" href="#生成に関するデザインパターン" title="このヘッドラインへのパーマリンク"></a></h1>
+<section id="builder">
+<h2>builder<a class="headerlink" href="#builder" title="このヘッドラインへのパーマリンク"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractproperty</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+
+<span class="c1"># PRODUCT</span>
+<span class="k">class</span> <span class="nc">SetMeal</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">main_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__main_dish</span>
+
+    <span class="nd">@main_dish</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">main_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_dish</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__main_dish</span> <span class="o">=</span> <span class="n">main_dish</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">side_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__side_dish</span>
+
+    <span class="nd">@side_dish</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">side_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side_dish</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__side_dish</span> <span class="o">=</span> <span class="n">side_dish</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;メインディッシュ:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">main_dish</span><span class="si">}</span><span class="s1">,サイドディッシュ:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">side_dish</span><span class="si">}</span><span class="s1">&#39;</span>
+
+
+<span class="c1"># builderのインターフェース</span>
+<span class="c1"># 抽象クラスなので継承先で使用しないといけない。</span>
+<span class="k">class</span> <span class="nc">SetMealBuilder</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_meal</span> <span class="o">=</span> <span class="n">SetMeal</span><span class="p">()</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">product</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">build_main_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">build_side_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">SannmaSetBuilder</span><span class="p">(</span><span class="n">SetMealBuilder</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">product</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_meal</span>
+
+    <span class="k">def</span> <span class="nf">build_main_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_meal</span><span class="o">.</span><span class="n">main_dish</span> <span class="o">=</span> <span class="s2">&quot;さんま&quot;</span>
+
+    <span class="k">def</span> <span class="nf">build_side_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_meal</span><span class="o">.</span><span class="n">side_dish</span> <span class="o">=</span> <span class="s2">&quot;味噌汁&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">PastaSetBuilder</span><span class="p">(</span><span class="n">SetMealBuilder</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">product</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_meal</span>
+
+    <span class="k">def</span> <span class="nf">build_main_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_meal</span><span class="o">.</span><span class="n">main_dish</span> <span class="o">=</span> <span class="s2">&quot;パスタ&quot;</span>
+
+    <span class="k">def</span> <span class="nf">build_side_dish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_meal</span><span class="o">.</span><span class="n">side_dish</span> <span class="o">=</span> <span class="s2">&quot;スープ&quot;</span>
+
+
+<span class="c1"># ディレクターが外部から呼び出すやつ</span>
+<span class="k">class</span> <span class="nc">Director</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">:</span> <span class="n">SetMealBuilder</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__builder</span> <span class="o">=</span> <span class="n">builder</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">builder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__builder</span>
+
+    <span class="nd">@builder</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">builder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__builder</span> <span class="o">=</span> <span class="n">builder</span>
+
+    <span class="c1"># 食品をビルド</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">build_main_dish</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">build_side_dish</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">builder</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">sannma_builder</span> <span class="o">=</span> <span class="n">SannmaSetBuilder</span><span class="p">()</span>
+    <span class="n">pasta_builder</span> <span class="o">=</span> <span class="n">PastaSetBuilder</span><span class="p">()</span>
+
+    <span class="n">director</span> <span class="o">=</span> <span class="n">Director</span><span class="p">(</span><span class="n">sannma_builder</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">director</span><span class="o">.</span><span class="n">build</span><span class="p">()</span><span class="o">.</span><span class="n">product</span><span class="p">)</span>
+
+    <span class="n">director</span> <span class="o">=</span> <span class="n">Director</span><span class="p">(</span><span class="n">pasta_builder</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">director</span><span class="o">.</span><span class="n">build</span><span class="p">()</span><span class="o">.</span><span class="n">product</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+メインディッシュ:さんま,サイドディッシュ:味噌汁
+メインディッシュ:パスタ,サイドディッシュ:スープ
+</pre></div></div>
+</div>
+</section>
+<section id="factoryメソッド">
+<h2>factoryメソッド<a class="headerlink" href="#factoryメソッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="オブジェクトの生成と具体的な処理を分離することで、柔軟にオブジェクトを利用でき、再利用性を高める。">
+<h3>オブジェクトの生成と具体的な処理を分離することで、柔軟にオブジェクトを利用でき、再利用性を高める。<a class="headerlink" href="#オブジェクトの生成と具体的な処理を分離することで、柔軟にオブジェクトを利用でき、再利用性を高める。" title="このヘッドラインへのパーマリンク"></a></h3>
+<section id="インターフェースで処理の骨組みを作り、サブクラスを用いてオブジェクトを作成する。サブクラスに応じて、作成されるオブジェクトのタイプを変える">
+<h4>インターフェースで処理の骨組みを作り、サブクラスを用いてオブジェクトを作成する。サブクラスに応じて、作成されるオブジェクトのタイプを変える<a class="headerlink" href="#インターフェースで処理の骨組みを作り、サブクラスを用いてオブジェクトを作成する。サブクラスに応じて、作成されるオブジェクトのタイプを変える" title="このヘッドラインへのパーマリンク"></a></h4>
+<ul class="simple">
+<li><p>Product:生成するオブジェクトの構成要素を定義するインタフェース</p></li>
+<li><p>ConcreteProduct:Productを具体化したクラス</p></li>
+<li><p>Creator:Productを生成する処理を定義したインターフェース</p></li>
+<li><p>ConcreteCreator:Creatorを具体化したConcreteProductを生成する。</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">abstractproperty</span>
+
+<span class="c1"># インターフェース作成</span>
+<span class="k">class</span> <span class="nc">IFactory</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_owners</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="n">owner</span>
+        <span class="n">product</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_product</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_product</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">product</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_create_product</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_register_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">CarFatory</span><span class="p">(</span><span class="n">IFactory</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_product</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Car</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_register_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_owners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">product</span><span class="o">.</span><span class="n">owner</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ShipFactory</span><span class="p">(</span><span class="n">IFactory</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_product</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Ship</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_register_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_owners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">product</span><span class="o">.</span><span class="n">owner</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">IProduct</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="n">owner</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">owner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">IProduct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="si">}</span><span class="s1">:車を運転します&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">owner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span>
+
+
+<span class="k">class</span> <span class="nc">Ship</span><span class="p">(</span><span class="n">IProduct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="si">}</span><span class="s1">:船を運転します&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">owner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">car_factory</span> <span class="o">=</span> <span class="n">CarFatory</span><span class="p">()</span>
+    <span class="n">yamada_car</span> <span class="o">=</span> <span class="n">car_factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;山田&#39;</span><span class="p">)</span>
+    <span class="n">yamada_car</span><span class="o">.</span><span class="n">use</span><span class="p">()</span>
+
+    <span class="n">ship_factory</span> <span class="o">=</span><span class="n">ShipFactory</span><span class="p">()</span>
+    <span class="n">john_ship</span><span class="o">=</span><span class="n">ship_factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;John&#39;</span><span class="p">)</span>
+
+    <span class="n">john_ship</span><span class="o">.</span><span class="n">use</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ship_factory</span><span class="o">.</span><span class="n">registered_owners</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">car_factory</span><span class="o">.</span><span class="n">registered_owners</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+山田:車を運転します
+John:船を運転します
+[&#39;John&#39;]
+[&#39;山田&#39;]
+</pre></div></div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -358,11 +610,18 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
+</section>
+</section>
+</section>
+</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="solid.html" class="btn btn-neutral float-left" title="SOLID" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mamushi.html" class="btn btn-neutral float-right" title="猫マムシの礎" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

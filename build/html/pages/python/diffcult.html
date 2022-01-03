@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pythonで理解するのが大変な分野のまとめ食い &mdash; MAMUSHI IS BEST  ドキュメント</title>
+  <title>python、理解が大変な分野 &mdash; MAMUSHI IS BEST  ドキュメント</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -52,30 +52,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../container/k8s.html">インターネットの「航海士」(k8s)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../container/docker_ec2.html">「鯨」をEc2で飼育する時</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../vim.html">vim操作</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">pythonで理解するのが大変な分野のまとめ食い</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">python、理解が大変な分野</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#スレッドについて">スレッドについて</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#デーモンスレッド:スレッド">デーモンスレッド:スレッド</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#スレッド:デーモンスレッド">スレッド:デーモンスレッド</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。">デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#セマフォ:スレッド">セマフォ:スレッド</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#スレッド:セマフォ">スレッド:セマフォ</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#スレッド数を制御をすることができる">スレッド数を制御をすることができる</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#キュー:スレッド">キュー:スレッド</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#スレッド:キュー">スレッド:キュー</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#スレッド間で入れたり受け取ったりできる。">スレッド間で入れたり受け取ったりできる。</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#キューの応用的な使い方:スレッド">キューの応用的な使い方:スレッド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#condition:スレッド">condition:スレッド</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#スレッド:キューの応用的な使い方">スレッド:キューの応用的な使い方</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#スレッド:condition">スレッド:condition</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#コンディションはスレッドの制御をすることができる">コンディションはスレッドの制御をすることができる</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#event:スレッド">event:スレッド</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#スレッド:event">スレッド:event</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#setが押されてから他のスレッドが動き始める">setが押されてから他のスレッドが動き始める</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#バリア:スレッド">バリア:スレッド</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#スレッド:バリア">スレッド:バリア</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#スレッドが2つ立ち上がらないように次まで進まない">スレッドが2つ立ち上がらないように次まで進まない</a></li>
 </ul>
 </li>
@@ -87,6 +87,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../codeDesign/solid.html">SOLID</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codeDesign/generatePattern.html">生成に関するデザインパターン</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mamushi.html">猫マムシの礎</a></li>
 </ul>
 
@@ -104,7 +105,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>pythonで理解するのが大変な分野のまとめ食い</li>
+      <li>python、理解が大変な分野</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/pages/python/diffcult.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -384,12 +385,12 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="pythonで理解するのが大変な分野のまとめ食い">
-<h1>pythonで理解するのが大変な分野のまとめ食い<a class="headerlink" href="#pythonで理解するのが大変な分野のまとめ食い" title="このヘッドラインへのパーマリンク"></a></h1>
+<section id="python、理解が大変な分野">
+<h1>python、理解が大変な分野<a class="headerlink" href="#python、理解が大変な分野" title="このヘッドラインへのパーマリンク"></a></h1>
 <section id="スレッドについて">
 <h2>スレッドについて<a class="headerlink" href="#スレッドについて" title="このヘッドラインへのパーマリンク"></a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
@@ -440,35 +441,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-rename worker1: start
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-スレッドがスタートしたよん
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Thread-29: start
-Thread-29: 100
-Thread-29: 200
-</pre></div></div>
-</div>
 </section>
-<section id="デーモンスレッド:スレッド">
-<h2>デーモンスレッド:スレッド<a class="headerlink" href="#デーモンスレッド:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッド:デーモンスレッド">
+<h2>スレッド:デーモンスレッド<a class="headerlink" href="#スレッド:デーモンスレッド" title="このヘッドラインへのパーマリンク"></a></h2>
 <section id="デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。">
 <h3>デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。<a class="headerlink" href="#デーモンを入れると、スレッドを待たずにプログラムを終了させる。joinを入れるとプログラムを待つ様になる。" title="このヘッドラインへのパーマリンク"></a></h3>
 <div class="nbinput docutils container">
@@ -544,8 +519,8 @@ Thread-30: end
 </div>
 </section>
 </section>
-<section id="セマフォ:スレッド">
-<h2>セマフォ:スレッド<a class="headerlink" href="#セマフォ:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッド:セマフォ">
+<h2>スレッド:セマフォ<a class="headerlink" href="#スレッド:セマフォ" title="このヘッドラインへのパーマリンク"></a></h2>
 <section id="スレッド数を制御をすることができる">
 <h3>スレッド数を制御をすることができる<a class="headerlink" href="#スレッド数を制御をすることができる" title="このヘッドラインへのパーマリンク"></a></h3>
 <div class="nbinput docutils container">
@@ -608,8 +583,8 @@ Thread-46: start
 </div>
 </section>
 </section>
-<section id="キュー:スレッド">
-<h2>キュー:スレッド<a class="headerlink" href="#キュー:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッド:キュー">
+<h2>スレッド:キュー<a class="headerlink" href="#スレッド:キュー" title="このヘッドラインへのパーマリンク"></a></h2>
 <section id="スレッド間で入れたり受け取ったりできる。">
 <h3>スレッド間で入れたり受け取ったりできる。<a class="headerlink" href="#スレッド間で入れたり受け取ったりできる。" title="このヘッドラインへのパーマリンク"></a></h3>
 <div class="nbinput docutils container">
@@ -674,8 +649,8 @@ Thread-52: end
 </div>
 </section>
 </section>
-<section id="キューの応用的な使い方:スレッド">
-<h2>キューの応用的な使い方:スレッド<a class="headerlink" href="#キューの応用的な使い方:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッド:キューの応用的な使い方">
+<h2>スレッド:キューの応用的な使い方<a class="headerlink" href="#スレッド:キューの応用的な使い方" title="このヘッドラインへのパーマリンク"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -2197,8 +2172,8 @@ Thread-59: 1438
 </div>
 </div>
 </section>
-<section id="condition:スレッド">
-<h2>condition:スレッド<a class="headerlink" href="#condition:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッド:condition">
+<h2>スレッド:condition<a class="headerlink" href="#スレッド:condition" title="このヘッドラインへのパーマリンク"></a></h2>
 <section id="コンディションはスレッドの制御をすることができる">
 <h3>コンディションはスレッドの制御をすることができる<a class="headerlink" href="#コンディションはスレッドの制御をすることができる" title="このヘッドラインへのパーマリンク"></a></h3>
 <p>スレッド3が先に走って終わったら スレッド1が先に走って終わったら スレッド2が実行される</p>
@@ -2275,8 +2250,8 @@ Thread-59: 1438
 </div>
 </section>
 </section>
-<section id="event:スレッド">
-<h2>event:スレッド<a class="headerlink" href="#event:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッド:event">
+<h2>スレッド:event<a class="headerlink" href="#スレッド:event" title="このヘッドラインへのパーマリンク"></a></h2>
 <section id="setが押されてから他のスレッドが動き始める">
 <h3>setが押されてから他のスレッドが動き始める<a class="headerlink" href="#setが押されてから他のスレッドが動き始める" title="このヘッドラインへのパーマリンク"></a></h3>
 <div class="nbinput docutils container">
@@ -2340,8 +2315,8 @@ Thread-37: start
 </div>
 </section>
 </section>
-<section id="バリア:スレッド">
-<h2>バリア:スレッド<a class="headerlink" href="#バリア:スレッド" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="スレッド:バリア">
+<h2>スレッド:バリア<a class="headerlink" href="#スレッド:バリア" title="このヘッドラインへのパーマリンク"></a></h2>
 <section id="スレッドが2つ立ち上がらないように次まで進まない">
 <h3>スレッドが2つ立ち上がらないように次まで進まない<a class="headerlink" href="#スレッドが2つ立ち上がらないように次まで進まない" title="このヘッドラインへのパーマリンク"></a></h3>
 <div class="nbinput docutils container">
