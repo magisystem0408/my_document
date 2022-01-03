@@ -20,9 +20,19 @@ kubectl create deployment nginx --image nginx:latest
 kubectl logs podの名前
 ```
 
+#### podのメタデータを確認する
+```shell
+kubectl describe pod podの名前
+```
+
 #### 実際のpodに入って調査する
 ```shell
 kubectl exec -it podの名前 /bin/sh
+```
+
+#### エンドポイント確認
+```shell
+kubectl cluster-info
 ```
 
 #### ローカルからkubectlにアクセスする
