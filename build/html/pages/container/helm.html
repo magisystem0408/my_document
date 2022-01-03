@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>「鯨」をEc2で飼育する時 &mdash; MAMUSHI IS BEST  ドキュメント</title>
+  <title>コロナウイルス(helm) &mdash; MAMUSHI IS BEST  ドキュメント</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,9 +19,7 @@
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../../genindex.html" />
-    <link rel="search" title="検索" href="../../search.html" />
-    <link rel="next" title="vim操作" href="../vim.html" />
-    <link rel="prev" title="インターネットの「航海士」(k8s)" href="k8s.html" /> 
+    <link rel="search" title="検索" href="../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,7 +38,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../algorithm/dataManipulation.html">データ構造操作</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../algorithm/basic.html">基本的なやつ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../algorithm/sequence.html">数列とか</a></li>
@@ -48,12 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../algorithm/comb.html">組み合わせとか順列とか</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker.html">例の「鯨」の飼い方(Docker)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="k8s.html">インターネットの「航海士」(k8s)</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">「鯨」をEc2で飼育する時</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#amazon-linux2docker">amazon-linux2にdockerにインストール</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#amazon-linux2docker-compose">amazon-linux2にdocker-composeインストール</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ubuntu">ubuntuに「鯨とタコ」インストール</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="docker_ec2.html">「鯨」をEc2で飼育する時</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../vim.html">vim操作</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/diffcult.html">python、理解が大変な分野</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../codeDesign/solid.html">SOLID</a></li>
@@ -75,9 +68,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>「鯨」をEc2で飼育する時</li>
+      <li>コロナウイルス(helm)</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/pages/container/docker_ec2.md.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/pages/container/helm.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -109,46 +102,17 @@
     text-align: unset;
 }
 </style>
-<section id="ec2">
-<h1>「鯨」をEc2で飼育する時<a class="headerlink" href="#ec2" title="このヘッドラインへのパーマリンク"></a></h1>
-<section id="amazon-linux2docker">
-<h2>amazon-linux2にdockerにインストール<a class="headerlink" href="#amazon-linux2docker" title="このヘッドラインへのパーマリンク"></a></h2>
-<div class="highlight-docker notranslate"><div class="highlight"><pre><span></span>sudo yum install -y docker
-sudo systemctl start docker
-sudo usermod -a -G docker ec2-user
-sudo systemctl <span class="nb">enable</span> docker
-</pre></div>
-</div>
-</section>
-<section id="amazon-linux2docker-compose">
-<h2>amazon-linux2にdocker-composeインストール<a class="headerlink" href="#amazon-linux2docker-compose" title="このヘッドラインへのパーマリンク"></a></h2>
-<div class="highlight-docker notranslate"><div class="highlight"><pre><span></span>sudo curl -L https://github.com/docker/compose/releases/download/1.28.5/docker-compose-<span class="sb">`</span>uname -s<span class="sb">`</span>-<span class="sb">`</span>uname -m<span class="sb">`</span> -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-</pre></div>
-</div>
-</section>
-<section id="ubuntu">
-<h2>ubuntuに「鯨とタコ」インストール<a class="headerlink" href="#ubuntu" title="このヘッドラインへのパーマリンク"></a></h2>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo apt update -y
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg <span class="p">|</span> sudo apt-key add -
-sudo add-apt-repository <span class="s2">&quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu </span><span class="k">$(</span>lsb_release -cs<span class="k">)</span><span class="s2"> stable&quot;</span>
-sudo apt update -y
-sudo apt -y install docker-ce docker-ce-cli containerd.io
-sudo gpasswd -a ubuntu docker
-
-sudo apt  install docker-compose
-</pre></div>
-</div>
+<section id="helm">
+<h1>コロナウイルス(helm)<a class="headerlink" href="#helm" title="このヘッドラインへのパーマリンク"></a></h1>
+<section id="id1">
+<h2>helmコマンド<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク"></a></h2>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="k8s.html" class="btn btn-neutral float-left" title="インターネットの「航海士」(k8s)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../vim.html" class="btn btn-neutral float-right" title="vim操作" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

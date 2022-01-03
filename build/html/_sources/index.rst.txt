@@ -12,11 +12,11 @@
    :glob:
 
 
-   pages/1
-   pages/2
-   pages/3
-   pages/4
-   pages/5
+   pages/algorithm/dataManipulation
+   pages/algorithm/basic
+   pages/algorithm/sequence
+   pages/algorithm/integer
+   pages/algorithm/comb
    pages/container/docker
    pages/container/k8s
    pages/container/docker_ec2

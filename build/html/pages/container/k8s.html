@@ -41,15 +41,30 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../1.html">基本的なやつ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../2.html">データ構造操作</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../3.html">整数とか素数とか</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../4.html">数列とか</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../5.html">組み合わせとか順列とか</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithm/dataManipulation.html">データ構造操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithm/basic.html">基本的なやつ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithm/sequence.html">数列とか</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithm/integer.html">整数とか素数とか</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithm/comb.html">組み合わせとか順列とか</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker.html">例の「鯨」の飼い方(Docker)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">インターネットの「航海士」(k8s)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#kubectl">kubectlコマンド</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">全てのリソース確認</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">リソース作成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">デバック方法</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id4">ログを確認する</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pod">podのメタデータを確認する</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">実際のpodに入って調査する</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">エンドポイント確認</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">ローカルからkubectlにアクセスする</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">k8sの環境について</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id9">クラスター切り替え</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">ネームスペース操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id18">kubectlを設定しているファイルに関して</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -119,6 +134,117 @@
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl get all
 </pre></div>
 </div>
+</section>
+<section id="id2">
+<h3>リソース作成<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl create deployment nginx --image nginx:latest
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3>デバック方法<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク"></a></h3>
+<section id="id4">
+<h4>ログを確認する<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク"></a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl logs podの名前
+</pre></div>
+</div>
+</section>
+<section id="pod">
+<h4>podのメタデータを確認する<a class="headerlink" href="#pod" title="このヘッドラインへのパーマリンク"></a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl describe pod podの名前
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h4>実際のpodに入って調査する<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク"></a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl <span class="nb">exec</span> -it podの名前 /bin/sh
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h4>エンドポイント確認<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク"></a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl cluster-info
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h4>ローカルからkubectlにアクセスする<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク"></a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;&gt;ブラウザからlocalhost:8080でアクセスできるようになる。
+kubectl port-forward podの名前 <span class="m">8080</span>:80
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h3>k8sの環境について<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク"></a></h3>
+<section id="id9">
+<h4>クラスター切り替え<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク"></a></h4>
+<section id="id10">
+<h5>環境を確認する<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク"></a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectx
+
+※ brew install kubectx
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h5>環境切り替え<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク"></a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectx minikube
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id12">
+<h4>ネームスペース操作<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク"></a></h4>
+<section id="id13">
+<h5>ネームスペース確認<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク"></a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubens
+
+or 
+kubectl get pods --all-namespaces
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h5>ネームスペース作成<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク"></a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl create namespace ネームスペース名
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h5>ネームスペースの変更<a class="headerlink" href="#id15" title="このヘッドラインへのパーマリンク"></a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubens ネームスペース名
+</pre></div>
+</div>
+</section>
+<section id="id16">
+<h5>ネームスペースの区別をする時には<a class="headerlink" href="#id16" title="このヘッドラインへのパーマリンク"></a></h5>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w"></span>
+<span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;ここにネームスペース名を記述する&gt;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h5>ネームスペースでpodを確認したい時<a class="headerlink" href="#id17" title="このヘッドラインへのパーマリンク"></a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl get pods -n ネームスペース名
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id18">
+<h4>kubectlを設定しているファイルに関して<a class="headerlink" href="#id18" title="このヘッドラインへのパーマリンク"></a></h4>
+<section id="config">
+<h5>configの有りか<a class="headerlink" href="#config" title="このヘッドラインへのパーマリンク"></a></h5>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ls ~/.kube/config
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 </section>
 </section>
