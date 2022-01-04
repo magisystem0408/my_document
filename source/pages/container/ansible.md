@@ -68,3 +68,65 @@ tasks:
       enabled: yes
 ```
 >コピー元はansibleディレクトリ配下のfilesを参照するようになっているのでその中に入れる。
+
+
+### 設定の再読み込みなどをする方法
+
+1. serviceモジュールのstateをrestartedにする。
+   - 設定変更が行われていなくても常にchangedになってしまう。
+2. commandモジュールで直接サービス再起動のコマンドを入れる
+   -  1と同様
+3. handlerを使用する
+
+
+```yaml
+hosts: 10.91.77.16
+gather_facts: yes
+remote_user: root
+vars:
+  ansible_password: password
+tasks:
+  - name: Apache2のインストール
+
+    apt:
+      name: Apache2
+      state: latest
+  - name: confファイルを配置
+    copy:
+      src: apache2.conf
+      dest: /etc/apache2/apache2.conf
+#    ここの値がchangedになった時、handlerが呼ばれる。
+    notify: restart apache2
+  - name: トップページの配置
+    copy:
+      src: index.html
+      dest: /var/www/index.html
+      
+  - name: apacheのサービスの有効化
+    service:
+      name: apache2
+      state: stated
+      enabled: yes
+      
+handlers:
+  - name: restart apache2
+    service:
+        name: apache2
+        state: restated
+```
+
+### 相手先のサーバーに認証を通す方法
+1. playbookにパスワードをベタがき
+    - セキュリティ面からよくない
+2. Vaultで暗号化したパスワードをPlaybookに書く
+```shell
+暗号化
+ansible-vault encrypt_string "暗号化したい文字列" --name "変数名"
+
+実行
+ansible-playbook yamlファイル --ask-vault-pass
+```
+apache2
+3. 実行時に対話コマンドでパスワード入力
+4. 鍵認証で事前に認証を通しておく
+
