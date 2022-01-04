@@ -20,10 +20,12 @@
    pages/container/docker
    pages/container/k8s
    pages/container/docker_ec2
+   pages/container/ansible
    pages/vim
    pages/python/diffcult
    pages/codeDesign/solid
    pages/codeDesign/generatePattern
+
 
 
    pages/mamushi
