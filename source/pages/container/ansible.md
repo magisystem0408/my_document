@@ -87,7 +87,6 @@ vars:
   ansible_password: password
 tasks:
   - name: Apache2のインストール
-
     apt:
       name: Apache2
       state: latest
@@ -128,5 +127,27 @@ ansible-playbook yamlファイル --ask-vault-pass
 ```
 apache2
 3. 実行時に対話コマンドでパスワード入力
-4. 鍵認証で事前に認証を通しておく
+4. 鍵認証で事前に認証を通しておく<CICDパイプラインを組む時、推奨>
 
+
+#### sshのフィンガープリント
+相手先のサーバーを覚えておいて次回そのサーバーに接続をする時、確実に対象が同じサーバーであることを
+確認するためのもの
+
+
+
+### Roleでplaybookに分ける
+#### フォルダ構成
+```
+※各フォルダのmain.yamlがデフォルトで読み込まれる。
+※全てのディレクトリがあるといったことではない。
+
+- defalut　変数のデフォルトの値
+- files　配置するファイルなど
+- handlers 最後実行したいhander処理
+- meta Roleの依存関係
+- tasks 実行するタスク
+- templates templateモジュールで使うファイル
+- test　テストコードを置く
+- vars 状況に応じて読み込む変数を書く
+```
