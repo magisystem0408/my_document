@@ -25,9 +25,7 @@
    pages/python/diffcult
    pages/codeDesign/solid
    pages/codeDesign/generatePattern
-
-
-
+   pages/gas/gasBasic
    pages/mamushi
 
 Indices and tables
