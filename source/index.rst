@@ -27,6 +27,7 @@
    pages/codeDesign/generatePattern
    pages/gas/gasBasic
    pages/mamushi
+   pages/terraform
 
 Indices and tables
 
