@@ -28,6 +28,7 @@
    pages/gas/gasBasic
    pages/mamushi
    pages/terraform
+   pages/aws
 
 Indices and tables
 
