@@ -29,6 +29,7 @@
    pages/mamushi
    pages/terraform
    pages/aws
+   pages/SRE
 
 Indices and tables
 
