@@ -13,3 +13,8 @@ terraform workspace new staging
 ```shell
 terraform workspace select staging
 ```
+
+## 変数ファイル設定
+```shell
+terraform plan -var-file="ファイル名.tfvars"
+```
