@@ -30,6 +30,7 @@
    pages/terraform
    pages/aws
    pages/SRE
+   pages/dns
 
 Indices and tables
 
